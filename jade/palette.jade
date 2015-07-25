@@ -1,0 +1,44 @@
+// The following vars need to be kept in sync with their corresponding
+// _palette.scss vars
+
+- var colors = ['base', 'alt', 'alt2'];  // plus -comp for each
+- var alts = ['-lt30', '-lt20', '-lt10', '-dk10', '-dk20', '-dk30'];
+
+mixin colorblock(clr)
+  -var clrCon = 'clr-' + clr + '-con'
+  div(class=clrCon).color-block #{clr}
+    - var clrCompCon = 'clr-' + clr + '-comp-con'
+    div(class=clrCompCon style="margin:0 auto").block-sm -comp
+
+mixin maincolor(clr, notCompColor)
+  -var clrCon = 'clr-' + clr + '-con'
+  div(class=clrCon).color #{clr}
+    div.row
+      each clr2 in colors
+        if (clr2 != clr)
+          - var clr2Con = 'clr-' + clr2 + '-con'
+          div(class=clr2Con).block-sm #{clr2}
+      - var clrComp = 'clr-' + clr + '-comp-con'
+      if (notCompColor)
+        - var clrCompCon = 'clr-' + clr + '-comp-con'
+        div(class=clrCompCon).block-sm -comp 
+      each alt in alts
+        - var clrAltCon = 'clr-' + clr + alt + '-con'
+        div(class=clrAltCon).block-sm #{alt}
+
+html
+  head
+    title Palette Check!
+    link(rel='stylesheet', type='text/css', href='../css/palette.css')
+  body
+    h1 The Current Palette
+    div.row
+      each color in colors
+        +colorblock(color)
+  
+    each color in colors
+      +maincolor(color, true)
+      
+    each color in colors
+      - var clrComp = color + '-comp'
+      +maincolor(clrComp, false)

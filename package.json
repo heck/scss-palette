@@ -1,0 +1,24 @@
+{
+  "name": "scss-palette",
+  "version": "0.1.0",
+  "description": "Palette example using SCSS and Jade",
+  "main": "",
+  "author": "Steve Heckt",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "glob": "^5.0.14",
+    "jade": "^1.11.0",
+    "node-sass": "^3.2.0",
+    "rimraf": "^2.4.1"
+  },
+  "scripts": {
+    "clean": "rimraf css/* && rimraf html/*",
+    "purge": "npm run clean && rimraf node_modules/*",
+    "setup": "mkdir -p css && mkdir -p html",
+    "build:scss": "node npm/scss.js",
+    "build:jade": "node npm/jade.js",
+    "build": "npm run setup && npm run build:scss && npm run build:jade"
+  }
+}

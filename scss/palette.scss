@@ -1,0 +1,26 @@
+@import '_palette';
+
+$width:  30px;
+$height: 23px;
+$margin: 3px;
+
+$numboxes: length($colors) + length($alters) - 1;
+$page-width: $width*($numboxes+2)*2;
+$padding: $margin;
+$color-block-width: $page-width/length($colors);
+
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+body { font-family: sans-serif; }
+
+.color-block { width: $color-block-width; height: $height*4; font-size: 2em; }
+
+.color { width: $page-width; height: $height*4; padding: $padding; font-size: 1.75em; }
+.row { display: flex; }
+.row > * { display: inline-block; }
+
+.block-sm { width: $width*2; height: $height*1.5; margin: $margin; font-size: .5em; }

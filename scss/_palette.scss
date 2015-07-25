@@ -1,0 +1,132 @@
+// The palette of colors.  Keys are used to specify desired color selection
+// by passing them to the color function below.  e.g. background: color(base);
+// Please don't use hyphens in the color key names!
+$colors: (
+  base: #9ea12b,
+  alt: #1d731d,
+  alt2: #d99624
+);
+
+// These are ways to alter the colors above.  Append them to the color key.
+// e.g. background: color(base-comp-dk20);
+$alters: (
+  '-comp':  ('adjust-hue', 180deg),
+  '-lt10': ('lighten', 10%),
+  '-lt20': ('lighten', 20%),
+  '-lt30': ('lighten', 30%),
+  '-dk10': ('darken', 10%),
+  '-dk20': ('darken', 20%),
+  '-dk30': ('darken', 30%),
+);
+
+// color($key)
+//
+// Usage: .button-color { background: color(base); }
+//        #disabled { background: color(base-dk20); }
+//
+// The following assumes a $key in the form
+//   <color from $colors><one or more $alters>
+//   e.g. 'alt2' or 'base-comp' or 'alt-comp-lt30'
+//
+// How she rolls:
+// First, if $key is just a color in $colors return it
+// If it's more complicated...
+//   Find the first color in $colors in the $key
+//   Then alter it by going through $alters in order and applying the color functions
+//   Finally, return the altered color
+// If not found, warn but return $key in case it's a HTML color or something
+@function color($key) {
+  // if the key is simply one of the color keys, return that key's color
+  @if map-has-key($colors, $key) {
+    @return map-get($colors, $key);
+  }
+
+  // Loop through each color key and see if it's part of the key passed in
+  $clr-keys: map-keys($colors);
+  @each $clr-key in $clr-keys {
+    $_indx: str-index($key, $clr-key);
+    @if $_indx {
+      // need to guard against a later key being a subset of a previous one
+      // e.g. $colors: (red: #ff0000, redgreen: #ffff00)
+      $_indx: $_indx + str-length($clr-key);
+      $_char: str-slice($key, $_indx, $_indx);
+      @if $_char == "-" {
+        // Okay, we have a match.  Apply the alterations (in order of the list above)
+        $clr: map-get($colors, $clr-key);
+        @each $alter in map-keys($alters) {
+          $_indx: str-index($key, $alter);
+          @if $_indx {
+            // works for single param color functions only
+            // TODO: MAYBE USE KEYWORD PARAMS ($degree: 180deg)
+            $_indx: $_indx + str-length($alter);
+            $_char: str-slice($key, $_indx, $_indx);
+            @if $_char == "-" or $_char == "" {
+              $call-list: map-get($alters, $alter);
+              $callee: nth($call-list,1);
+              $param: nth($call-list,2);
+              $clr: call($callee, $clr, $param);
+            }
+          }
+        }
+        @return $clr;
+      }
+    }
+  }
+
+  @warn "Unrecognized color key `#{$key}` in call to color()";
+  @return $key;
+}
+
+// Create a bunch of pre-made classes for use with all the colors, their complements,
+// and one for each of the alterations
+// e.g. .clr-base { background: color(base); }
+//      .clr-alt-comp { background: color(alt-comp); }
+//      .clr-alt-dk20 { background: color(alt-dk20); }
+// Also, throw in classes with all those colors plus the foreground color in black
+// or white depending on which one provides the most contrast
+// e.g. .clr-base-con { background: color(base); <see back-with-contrast mixin> }
+//
+$pre: 'clr-';
+$con: '-con'; // the bit at the end for foreground contrast classes
+
+// for color display: background=color, font=pick most contrasting black vs white
+@mixin background($color) {
+  background: $color;
+}
+
+@mixin back-with-contrast($color) {
+  background: $color;
+  color: if(lightness(invert($color)) > 50%, #ffffff, #000000);
+}
+
+// Build a bunch of classes for colorizing based on the color names and using the
+// box-colors mixin above.  Including the complemenatary colors and contrasting
+// foreground.
+// e.g. .clr-base { background: color(base); }
+//      .clr-base-con { background: color(base); <see back-with-contrast mixin>; }
+//      .clr-base-comp { background: color(base-comp); }
+//      .clr-base-comp-con { background: color(base-comp); <see back-with-contrast mixin>; }
+$clrs: ();
+@each $clr in map-keys($colors) {
+  .#{$pre}#{$clr} { @include background(color($clr)); }
+  .#{$pre}#{$clr}#{$con} { @include back-with-contrast(color($clr)); }
+  $clrs: append($clrs, $clr);
+  .#{$pre}#{$clr}-comp { @include background(color(#{$clr}-comp)); }
+  .#{$pre}#{$clr}-comp#{$con} { @include back-with-contrast(color(#{$clr}-comp)); }
+  $clrs: append($clrs, #{$clr}-comp);
+}
+
+// Build classes for clorizing all the above colors using each alter (except
+// the -comp alter, which was done above)
+// e.g. .clr-base-dk20 { background: color(base-dk20); }
+//      .clr-base-dk20-con { background: color(base-dk20); <see back-with-contrast mixin>; }
+//      .clr-base-comp-lt30 { background: color(base-comp-lt30); }
+//      .clr-base-comp-lt30-con { background: color(base-lt30-comp); <see back-with-contrast mixin>; }
+@each $clr in $clrs {
+  @each $alt in map-keys($alters) {
+    @if $alt != '-comp' {
+      .#{$pre}#{$clr}#{$alt} { @include background(color(#{$clr}#{$alt})); }
+      .#{$pre}#{$clr}#{$alt}#{$con} { @include back-with-contrast(color(#{$clr}#{$alt})); }
+    }
+  }
+}
