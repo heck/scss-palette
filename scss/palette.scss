@@ -4,8 +4,8 @@ $width:  30px;
 $height: 23px;
 $margin: 3px;
 
-$numboxes: length($colors) + length($alters) - 1;
-$page-width: $width*($numboxes+2)*2;
+$numboxes: length($alters);
+$page-width: $width*($numboxes)*2;
 $padding: $margin;
 $color-block-width: $page-width/length($colors);
 

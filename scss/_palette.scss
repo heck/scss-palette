@@ -10,13 +10,24 @@ $colors: (
 // These are ways to alter the colors above.  Append them to the color key.
 // e.g. background: color(base-comp-dk20);
 $alters: (
-  '-comp':  ('adjust-hue', 180deg),
+  '-comp': ('adjust-hue', 180deg),
   '-lt10': ('lighten', 10%),
   '-lt20': ('lighten', 20%),
   '-lt30': ('lighten', 30%),
   '-dk10': ('darken', 10%),
   '-dk20': ('darken', 20%),
   '-dk30': ('darken', 30%),
+  '-30':   ('adjust-hue', 30deg),
+  '-60':   ('adjust-hue', 60deg),
+  '-90':   ('adjust-hue', 90deg),
+  '-120':  ('adjust-hue', 120deg),
+  '-150':  ('adjust-hue', 150deg),
+  '-180':  ('adjust-hue', 180deg),
+  '-210':  ('adjust-hue', 210deg),
+  '-240':  ('adjust-hue', 240deg),
+  '-270':  ('adjust-hue', 270deg),
+  '-300':  ('adjust-hue', 300deg),
+  '-330':  ('adjust-hue', 330deg),
 );
 
 // color($key)
